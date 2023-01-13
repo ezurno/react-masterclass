@@ -15,13 +15,31 @@ const Circle = styled(Box)`
   border-radius: 100px;
 `;
 
+/**
+ * attrs => attributed로 tag 내 추가 조건을 입력 해 줄 수 있음
+ */
+const Input = styled.input.attrs({ required: true })`
+  color: white;
+  background-color: tomato;
+  border: 0px none;
+  margin-right: 1px;
+`;
+
 function App() {
   return (
-    <Container>
-      <Box bgColor="teal" />
-      <Circle bgColor="tomato" />
-      <Box bgColor="gray" />
-    </Container>
+    <>
+      <Container as="header">
+        <Box bgColor="teal" />
+        <Circle bgColor="tomato" />
+        <Box bgColor="gray" />
+      </Container>
+      <Container>
+        <Input />
+        <Input />
+        <Input />
+        <Input />
+      </Container>
+    </>
   );
 }
 

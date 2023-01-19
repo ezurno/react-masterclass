@@ -1,49 +1,55 @@
-import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router";
 import styled from "styled-components";
-
-// 1번째 방법 => interface로 오브젝트 형식을 만들어 반환 한다.
-interface RouteParams {
-  coinId: string;
-}
-
-// 2번째 방법 => usePrams의 args에 (coinId : string) 으로 직접 반환한다.
 
 const Title = styled.h1`
   font-size: 48px;
   color: ${(props) => props.theme.accentColor};
 `;
-
 const Loader = styled.span`
   text-align: center;
   display: block;
 `;
-
 const Container = styled.div`
   padding: 0px 20px;
-  max-width: 400px;
+  max-width: 480px;
   margin: 0 auto;
 `;
-
 const Header = styled.header`
   height: 15vh;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
-
+interface RouteParams {
+  coinId: string;
+}
 interface RouteState {
   name: string;
 }
-
-export default function Coin() {
+function Coin() {
   const [loading, setLoading] = useState(true);
-
   const { coinId } = useParams<RouteParams>();
   const { state } = useLocation<RouteState>();
-  //
-  console.log(coinId);
-  console.log(state);
+
+  const [info, setInfo] = useState({});
+  const [priceInfo, setPriceInfo] = useState({});
+  // info 와 price 값을 받는 object setting
+
+  useEffect(() => {
+    (async () => {
+      const infoData = await (
+        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
+      ).json();
+      const priceData = await (
+        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+      ).json();
+
+      console.log(infoData);
+      setInfo(infoData);
+      setPriceInfo(priceData);
+    })();
+  }, []);
   return (
     <Container>
       <Header>
@@ -53,3 +59,4 @@ export default function Coin() {
     </Container>
   );
 }
+export default Coin;

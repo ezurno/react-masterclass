@@ -97,7 +97,7 @@ function Coins() {
             <Coin key={coin.id}>
               <Link
                 to={{
-                  pathname: `/${coin.id};`,
+                  pathname: `/${coin.id}`,
                   state: { name: coin.name },
                   // Link는 data 값도 다음 페이지로 넘겨줄 수 있음
                 }}

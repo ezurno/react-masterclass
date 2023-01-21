@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import {
   Route,
   Switch,
@@ -155,14 +156,23 @@ function Coin() {
   );
   const { isLoading: tickersLoading, data: tickersData } = useQuery<PriceData>(
     ["ticker", coinId],
-    () => fetchCoinTickers(coinId)
+    () => fetchCoinTickers(coinId),
+    {
+      refetchInterval: 5000,
+    }
   ); // isLoading, data기 Info 와 tickers 가 겹치므로 isLoading : rename 으로 설정
   // key도 배열으로 존재하므로 ["", ] key, hash 형태로 저장
+  // useQuery의 3번째 args, 일정시간이 지나면 다시 refetch
 
   const loading = infoLoading || tickersLoading;
 
   return (
     <Container>
+      <Helmet>
+        <title>
+          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+        </title>
+      </Helmet>
       <Header>
         <Title>
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
@@ -183,8 +193,8 @@ function Coin() {
               <span>${infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Open Source:</span>
-              <span>{infoData?.open_source ? "Yes" : "No"}</span>
+              <span>Price:</span>
+              <span>{tickersData?.quotes.USD.price.toFixed(3)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoins } from "../api";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -67,33 +68,24 @@ const Loader = styled.span`
 `;
 
 function Coins() {
-  const [coins, setCoins] = useState<CoinsInterface[]>([]);
-  // useState가 CoinsInterface로 이루어진 [] 이라 TS에 알려주어야 함
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    //()() 을 사용하면 바로 execute가 가능함
-    (async () => {
-      const response = await fetch("https://api.coinpaprika.com/v1/coins");
-      const json = await response.json(); // response로 부터 js 를 받아옴
-
-      setCoins(json.slice(0, 100));
-      // 배열을 나누는 함수 slice로 json으로부터 받아온 배열을 100개 까지만 가져옴
-      setLoading(false);
-    })();
-  }, []);
+  const { isLoading, data } = useQuery<CoinsInterface[]>(
+    ["allCoins"],
+    fetchCoins
+  );
+  // [""]는 key name, array로 존재함
+  // isLoading은 boolean type으로써 loading 여부를 확인 함, fetchCoins가 완료 되면 data에 값을 받음
+  // data의 type을 TS에 알려주어야 하므로 useQuery에 리턴값 json을 CoinInterface에 맞는 배열로 받는다고 알려줌
 
   return (
     <Container>
       <Header>
         <Title>COINS</Title>
       </Header>
-      {loading ? (
+      {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <CoinsList>
-          {coins.map((coin) => (
+          {data?.slice(0, 100).map((coin) => (
             <Coin key={coin.id}>
               <Link
                 to={{

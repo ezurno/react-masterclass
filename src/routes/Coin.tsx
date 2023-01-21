@@ -144,13 +144,13 @@ function Coin() {
   const { coinId } = useParams<RouteParams>();
   const { state } = useLocation<RouteState>();
 
-  const [info, setInfo] = useState<InfoData>();
-  const [priceInfo, setPriceInfo] = useState<PriceData>();
-  // info 와 price 값을 받는 object setting
-
   const priceMatch = useRouteMatch("/:coinId/price");
   const chartMatch = useRouteMatch("/:coinId/chart");
   // useRouteMatch는 url 이 맞는지 확인해 object를 돌려주는 hook, 참이면 null을 return
+
+  const [info, setInfo] = useState<InfoData>();
+  const [priceInfo, setPriceInfo] = useState<PriceData>();
+  // info 와 price 값을 받는 object setting
 
   useEffect(() => {
     (async () => {

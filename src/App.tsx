@@ -1,6 +1,7 @@
 import styled, { createGlobalStyle } from "styled-components";
 import Form from "./Form";
 import Router from "./Router";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 /**
  * styled-components는 createGlobalStyle이라는 전역 style 작성을 지원함
@@ -80,6 +81,7 @@ function App() {
       {/* 쓸데없는 div 오남용을 방지하기 위해 fragment 사용 */}
       <GlobalStyle />
       <Router />
+      <ReactQueryDevtools />
     </>
   );
 }

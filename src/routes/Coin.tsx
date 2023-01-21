@@ -1,3 +1,4 @@
+import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
 import {
   Route,
@@ -10,6 +11,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Chart from "./Chart";
 import Price from "./Price";
+import { fetchCoinInfo, fetchCoinTickers } from "../api";
 
 const Title = styled.h1`
   font-size: 48px;
@@ -140,7 +142,6 @@ const Tab = styled.span<{ isActive: boolean }>`
 `;
 
 function Coin() {
-  const [loading, setLoading] = useState(true);
   const { coinId } = useParams<RouteParams>();
   const { state } = useLocation<RouteState>();
 
@@ -148,33 +149,23 @@ function Coin() {
   const chartMatch = useRouteMatch("/:coinId/chart");
   // useRouteMatch는 url 이 맞는지 확인해 object를 돌려주는 hook, 참이면 null을 return
 
-  const [info, setInfo] = useState<InfoData>();
-  const [priceInfo, setPriceInfo] = useState<PriceData>();
-  // info 와 price 값을 받는 object setting
+  const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(
+    ["info", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  const { isLoading: tickersLoading, data: tickersData } = useQuery<PriceData>(
+    ["ticker", coinId],
+    () => fetchCoinTickers(coinId)
+  ); // isLoading, data기 Info 와 tickers 가 겹치므로 isLoading : rename 으로 설정
+  // key도 배열으로 존재하므로 ["", ] key, hash 형태로 저장
 
-  useEffect(() => {
-    (async () => {
-      const infoData = await (
-        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-      ).json();
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-      ).json();
+  const loading = infoLoading || tickersLoading;
 
-      console.log(infoData);
-      console.log(priceData);
-
-      setInfo(infoData);
-      setPriceInfo(priceData);
-
-      setLoading(false);
-    })();
-  }, [coinId]);
   return (
     <Container>
       <Header>
         <Title>
-          {state?.name ? state.name : loading ? "Loading..." : info?.name}
+          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
           {/* state가 존재하면 name을 보내고, 그렇지 않으면 loading인지를 체크 한 후 Loaing 출력, 아닐 경우 info의 name 출력 */}
         </Title>
       </Header>
@@ -185,26 +176,26 @@ function Coin() {
           <Overview>
             <OverviewItem>
               <span>Rank:</span>
-              <span>{info?.rank}</span>
+              <span>{infoData?.rank}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Symbol:</span>
-              <span>${info?.symbol}</span>
+              <span>${infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Open Source:</span>
-              <span>{info?.open_source ? "Yes" : "No"}</span>
+              <span>{infoData?.open_source ? "Yes" : "No"}</span>
             </OverviewItem>
           </Overview>
-          <Description>{info?.description}</Description>
+          <Description>{infoData?.description}</Description>
           <Overview>
             <OverviewItem>
               <span>Total supply:</span>
-              <span>{priceInfo?.total_supply}</span>
+              <span>{tickersData?.total_supply}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max supply:</span>
-              <span>{priceInfo?.max_supply}</span>
+              <span>{tickersData?.max_supply}</span>
             </OverviewItem>
           </Overview>
 

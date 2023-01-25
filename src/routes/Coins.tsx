@@ -17,13 +17,26 @@ const Header = styled.header`
   align-items: center;
 `;
 
-const CoinsList = styled.ul``;
+const CoinsList = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(33, 1fr);
+  gap: 10px;
+`;
 
-const Coin = styled.li`
+const Coin = styled.div`
   background-color: white;
-  color: ${(props) => props.theme.bgColor};
-  border-radius: 15px;
+  color: ${(props) => props.theme.textColor};
+  border-radius: 30px;
   margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease-in;
+
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   :hover {
     background-color: #e8e8e8;
   }
@@ -33,6 +46,11 @@ const Coin = styled.li`
     align-items: center;
     padding: 20px;
     transition: color 0.2s ease-in;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr, 1fr;
+    justify-content: center;
+    align-items: center;
   }
   &:hover {
     a {
@@ -41,15 +59,25 @@ const Coin = styled.li`
   }
 `;
 
+const Txt = styled.h3`
+  text-align: center;
+`;
+
 const Title = styled.h1`
   font-size: 48px;
   color: ${(props) => props.theme.accentColor};
 `;
 
-const Img = styled.img`
-  width: 35px;
-  height: 35px;
-  margin-right: 10px;
+const Img = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 35px;
+    height: 35px;
+    margin-bottom: 5px;
+  }
 `;
 
 interface CoinsInterface {
@@ -89,7 +117,7 @@ function Coins() {
         <Loader>Loading...</Loader>
       ) : (
         <CoinsList>
-          {data?.slice(0, 100).map((coin) => (
+          {data?.slice(0, 99).map((coin) => (
             <Coin key={coin.id}>
               <Link
                 to={{
@@ -98,10 +126,12 @@ function Coins() {
                   // Link는 data 값도 다음 페이지로 넘겨줄 수 있음
                 }}
               >
-                <Img
-                  src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
-                ></Img>
-                {coin.name} &rarr;
+                <Img>
+                  <img
+                    src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
+                  />
+                </Img>
+                <Txt>{coin.name}</Txt>
               </Link>
             </Coin>
           ))}

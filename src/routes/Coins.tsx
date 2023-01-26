@@ -21,7 +21,7 @@ const CoinsList = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(33, 1fr);
-  gap: 10px;
+  gap: 5px;
 `;
 
 const Coin = styled.div`
@@ -47,7 +47,6 @@ const Coin = styled.div`
     padding: 20px;
     transition: color 0.2s ease-in;
     display: grid;
-    grid-template-columns: 1fr;
     grid-template-rows: 1fr, 1fr;
     justify-content: center;
     align-items: center;

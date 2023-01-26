@@ -22,6 +22,7 @@ function Chart({ coinId }: ChartProps) {
   const { isLoading, data } = useQuery<IHistorical[]>(["ohlcv", coinId], () =>
     fetchCoinHistory(coinId)
   );
+
   return (
     <div>
       {isLoading ? (
@@ -33,10 +34,6 @@ function Chart({ coinId }: ChartProps) {
             {
               name: "closed value",
               data: data?.map((price) => price.close) ?? [],
-            },
-            {
-              name: "high value",
-              data: data?.map((price) => price.high) ?? [],
             },
           ]}
           options={{
@@ -50,7 +47,7 @@ function Chart({ coinId }: ChartProps) {
             },
 
             theme: {
-              mode: "dark",
+              mode: "light",
             },
             stroke: {
               curve: "smooth",
@@ -62,11 +59,12 @@ function Chart({ coinId }: ChartProps) {
             },
             xaxis: {
               axisBorder: {
-                show: false,
+                show: true,
               },
               labels: {
-                show: false,
+                show: true,
               },
+
               categories: data?.map((price) =>
                 new Date(parseInt(price.time_close) * 1000).toISOString()
               ),

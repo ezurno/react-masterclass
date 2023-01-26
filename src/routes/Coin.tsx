@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Chart from "./Chart";
 import Price from "./Price";
+import Candle from "./Candle";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
 
 const Title = styled.h1`
@@ -56,6 +57,11 @@ const OverviewItem = styled.div`
 `;
 const Description = styled.p`
   margin: 20px 0px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px 10px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
 `;
 
 interface RouteParams {
@@ -133,17 +139,23 @@ const Tab = styled.span<{ isActive: boolean }>`
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 400;
-  background-color: white;
+  background-color: ${(props) =>
+    props.isActive ? props.theme.accentColor : "white"};
   padding: 7px 0px;
   box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
     rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   border-radius: 10px;
-  color: ${(props) =>
-    props.isActive ? props.theme.accentColor : props.theme.textColor};
+  color: ${(props) => (props.isActive ? "white" : props.theme.textColor)};
 
   a {
     display: block;
   }
+`;
+
+const Head = styled.div`
+  width: 50px;
+  padding: 10px;
+  cursor: pointer;
 `;
 
 function Coin() {
@@ -152,6 +164,7 @@ function Coin() {
 
   const priceMatch = useRouteMatch("/:coinId/price");
   const chartMatch = useRouteMatch("/:coinId/chart");
+  const candleMatch = useRouteMatch("/:coinId/candle");
   // useRouteMatch는 url 이 맞는지 확인해 object를 돌려주는 hook, 참이면 null을 return
 
   const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(
@@ -172,6 +185,18 @@ function Coin() {
 
   return (
     <Container>
+      <Link to={`/`}>
+        <Head>
+          <svg
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12 0a1.44 1.44 0 0 0-.947.399L.547 10.762a1.26 1.26 0 0 0-.342.808v11.138c0 .768.53 1.292 1.311 1.292h20.968c.78 0 1.311-.522 1.311-1.292V11.57a1.25 1.25 0 0 0-.34-.804L15.68 3.097h-.001L12.947.4A1.454 1.454 0 0 0 12 0Zm0 6.727 6.552 6.456v5.65H5.446v-5.65z" />
+          </svg>
+        </Head>
+      </Link>
+
       <Helmet>
         <title>
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
@@ -179,7 +204,11 @@ function Coin() {
       </Helmet>
       <Header>
         <Title>
-          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+          {state?.name
+            ? state.name.toUpperCase()
+            : loading
+            ? "Loading..."
+            : infoData?.name.toUpperCase()}
           {/* state가 존재하면 name을 보내고, 그렇지 않으면 loading인지를 체크 한 후 Loaing 출력, 아닐 경우 info의 name 출력 */}
         </Title>
       </Header>
@@ -198,7 +227,7 @@ function Coin() {
             </OverviewItem>
             <OverviewItem>
               <span>Price:</span>
-              <span>{tickersData?.quotes.USD.price.toFixed(3)}</span>
+              <span>{tickersData?.quotes.USD.price.toFixed(2)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>
@@ -217,11 +246,11 @@ function Coin() {
             <Tab isActive={chartMatch !== null}>
               <Link to={`/${coinId}/chart`}>Chart</Link>
             </Tab>
+            <Tab isActive={candleMatch !== null}>
+              <Link to={`/${coinId}/candle`}>Candle</Link>
+            </Tab>
             <Tab isActive={priceMatch !== null}>
               <Link to={`/${coinId}/price`}>Price</Link>
-            </Tab>
-            <Tab isActive={false}>
-              <Link to={`/`}>Home</Link>
             </Tab>
           </Tabs>
 
@@ -230,7 +259,17 @@ function Coin() {
               <Chart coinId={coinId} />
             </Route>
             <Route path={`/${coinId}/price`}>
-              <Price />
+              <Price
+                percent30m={tickersData?.quotes.USD.percent_change_30m}
+                percent1h={tickersData?.quotes.USD.percent_change_1h}
+                percent12h={tickersData?.quotes.USD.percent_change_12h}
+                percent7d={tickersData?.quotes.USD.percent_change_7d}
+                percent30d={tickersData?.quotes.USD.percent_change_30d}
+                percent1y={tickersData?.quotes.USD.percent_change_1y}
+              />
+            </Route>
+            <Route path={`/${coinId}/candle`}>
+              <Candle coinId={coinId} />
             </Route>
           </Switch>
         </>

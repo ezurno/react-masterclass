@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
 import { Helmet } from "react-helmet";
+import { isDartAtom } from "../atoms";
+import { useSetRecoilState } from "recoil";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -95,6 +97,17 @@ const Loader = styled.span`
   color: ${(props) => props.theme.textColor};
 `;
 
+const Head = styled.div`
+  background-color: ${(props) => props.theme.accentColor};
+  color: ${(props) => props.theme.textColor};
+  display: inline;
+  padding: 0px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+`;
+
 function Coins() {
   const { isLoading, data } = useQuery<CoinsInterface[]>(
     ["allCoins"],
@@ -104,11 +117,19 @@ function Coins() {
   // isLoading은 boolean type으로써 loading 여부를 확인 함, fetchCoins가 완료 되면 data에 값을 받음
   // data의 type을 TS에 알려주어야 하므로 useQuery에 리턴값 json을 CoinInterface에 맞는 배열로 받는다고 알려줌
 
+  const setter = useSetRecoilState(isDartAtom); // isDarkAtom의 state를 가져와 useState의 set 처럼 사용
+  const toggleBtn = () => {
+    setter((current) => !current);
+  };
+
   return (
     <Container>
       <Helmet>
         <title>COINS</title>
       </Helmet>
+      <Head>
+        <span onClick={toggleBtn}>Toggle</span>
+      </Head>
       <Header>
         <Title>COINS</Title>
       </Header>

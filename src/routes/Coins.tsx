@@ -25,7 +25,7 @@ const CoinsList = styled.div`
 `;
 
 const Coin = styled.div`
-  background-color: white;
+  background-color: ${(props) => props.theme.accentColor};
   color: ${(props) => props.theme.textColor};
   border-radius: 30px;
   margin-bottom: 10px;

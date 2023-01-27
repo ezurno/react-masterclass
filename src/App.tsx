@@ -1,7 +1,10 @@
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import Form from "./Form";
 import Router from "./Router";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { reverseTheme, theme } from "./theme";
+import { useRecoilValue } from "recoil";
+import { isDartAtom } from "./atoms";
 
 /**
  * styled-components는 createGlobalStyle이라는 전역 style 작성을 지원함
@@ -76,12 +79,15 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
+  const isDark = useRecoilValue(isDartAtom);
   return (
     <>
       {/* 쓸데없는 div 오남용을 방지하기 위해 fragment 사용 */}
-      <GlobalStyle />
-      <Router />
-      <ReactQueryDevtools />
+      <ThemeProvider theme={isDark ? theme : reverseTheme}>
+        <GlobalStyle />
+        <Router />
+        <ReactQueryDevtools />
+      </ThemeProvider>
     </>
   );
 }
